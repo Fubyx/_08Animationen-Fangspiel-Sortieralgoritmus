@@ -1,0 +1,26 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.Group?>
+<BorderPane onKeyPressed="#test"
+        fx:controller="com.example._08animationenfangspielsortieralgoritmus.Controller"
+            xmlns:fx="http://javafx.com/fxml">
+
+    <center>
+        <Group fx:id="group">
+
+        </Group>
+    </center>
+
+    <bottom>
+        <FlowPane>
+            <Button fx:id="btn" onAction="#click" text="button 1"/>
+            <Button fx:id="btn1" text="button 2"/>
+        </FlowPane>
+    </bottom>
+
+</BorderPane>
