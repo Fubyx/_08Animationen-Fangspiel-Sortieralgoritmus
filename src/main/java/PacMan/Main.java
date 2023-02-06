@@ -2,6 +2,7 @@ package PacMan;
 
 import com.example._08animationenfangspielsortieralgoritmus.WallNode;
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -20,8 +21,8 @@ public class Main extends Application {
             for (int x = 0; x < WIDTH_WALLNODES; x++) {
                 wallNodes.get(y).add(new WallNode());
             }
-
         }
+        Group root = new Group();
 
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
