@@ -7,4 +7,6 @@ module com.example._08animationenfangspielsortieralgoritmus {
     opens fangspiel to javafx.fxml;
     exports com.example._08animationenfangspielsortieralgoritmus;
     exports fangspiel;
+    exports PacMan;
+    opens PacMan to javafx.fxml;
 }
