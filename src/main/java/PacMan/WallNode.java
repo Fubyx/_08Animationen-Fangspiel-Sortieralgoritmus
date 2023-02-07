@@ -1,4 +1,4 @@
-package com.example._08animationenfangspielsortieralgoritmus;
+package PacMan;
 
 public class WallNode {
     public boolean isConnected = false;
