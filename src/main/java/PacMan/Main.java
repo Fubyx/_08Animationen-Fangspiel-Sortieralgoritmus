@@ -64,22 +64,22 @@ public class Main extends Application {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, 1.5*sectionHeight);
+                    r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, 1.5*sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, 1.5*sectionHeight);
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                    r = new Rectangle((x ) * sectionWidth, (y + 1) * sectionHeight, 1.5*sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x) * sectionWidth, (y + 1) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
@@ -94,40 +94,35 @@ public class Main extends Application {
         generateWallsRecursion(0, 0);
         deleteSomeWalls(0, 0, 5);
     }
-    private void deleteSomeWalls(int x, int y, int skipXWalls) {
-        while (true) {
-            if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[0] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                y--;
-            } else if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[1] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                x++;
-            } else if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[2] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                y++;
-            } else if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[3] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                x--;
-            } else {
-                break;
-            }
-            if (skipXWalls == 0) {
-                skipXWalls = random.nextInt(2, 10);
-            }
-            skipXWalls--;
 
+    private void deleteSomeWalls(int x, int y, int skipXWalls) {
+        if (wallNodes.get(y).get(x).wallInDirection[0] && wallNodes.get(y-1).get(x).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[0] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x, y-1, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[1] && wallNodes.get(y).get(x+1).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[1] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x+1, y, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[2] && wallNodes.get(y+1).get(x).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[2] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x, y+1, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[3] && wallNodes.get(y).get(x-1).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[3] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x-1, y, skipXWalls-1);
         }
     }
 
