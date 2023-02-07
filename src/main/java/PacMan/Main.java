@@ -2,6 +2,7 @@ package PacMan;
 
 import javafx.application.Application;
 import javafx.beans.binding.Binding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,6 +22,7 @@ public class Main extends Application {
     Random random = new Random();
 
     double stageWidth = 700, stageHeight = 700;
+    DoubleProperty d;
     Group root = new Group();
 
 
@@ -62,17 +64,25 @@ public class Main extends Application {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
                     r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, sectionHeight);
-                }else if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
-                }else if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, sectionHeight);
-                }else if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                    r = new Rectangle((x) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
-                } else {
-                    continue;
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
                 }
-                r.setFill(Paint.valueOf("green"));
-                walls.add(r);
+                if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
+                }
+                if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, sectionHeight);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
+                }
+                if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                    r = new Rectangle((x) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
+                }
+
                 //r.heightProperty() new SimpleDoubleProperty();
             }
         }
