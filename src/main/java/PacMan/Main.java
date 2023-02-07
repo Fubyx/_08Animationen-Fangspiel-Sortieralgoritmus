@@ -16,7 +16,7 @@ public class Main extends Application {
     final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
 
-    int stageWidth = 0, stageHeight = 0;
+    int stageWidth = 1000, stageHeight = 1000;
     Group root = new Group();
 
 
@@ -33,6 +33,8 @@ public class Main extends Application {
         //root.getChildren().add(new Rectangle(100, 100, 100, 100));
         primaryStage.setTitle("Pac Man!");
         primaryStage.setScene(new Scene(root));
+        primaryStage.setHeight(1000);
+        primaryStage.setWidth(1000);
         primaryStage.show();
     }
 
@@ -47,25 +49,25 @@ public class Main extends Application {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                    r = new Rectangle(x * sectionWidth, (y - 1) * sectionHeight, sectionWidth / 2, sectionHeight);
+                    r = new Rectangle((x+1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                    r = new Rectangle((x - 1) * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x+2) * sectionWidth, (y+1) * sectionHeight, sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                    r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth / 2, sectionHeight);
+                    r = new Rectangle((x+1)* sectionWidth, (y+2) * sectionHeight, sectionWidth / 2, sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                    r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x) * sectionWidth, (y+1) * sectionHeight, sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
 
