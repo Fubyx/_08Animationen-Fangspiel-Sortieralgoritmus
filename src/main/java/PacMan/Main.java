@@ -1,7 +1,9 @@
 package PacMan;
 
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
@@ -61,26 +63,28 @@ public class Main extends Application {
         for (int y = 0; y < wallNodes.size(); ++y) {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
-                if (wallNodes.get(y).get(x).wallInDirection[0]) {//up
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y) * sectionHeight - sectionHeight/4, sectionWidth / 2, sectionHeight * 1.5);
+                if (wallNodes.get(y).get(x).wallInDirection[0]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, 1.5*sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[1]) {//right
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth * 1.5, sectionHeight / 2);
+                if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, 1.5*sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[2]) {//down
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth / 2, sectionHeight * 1.5);
+                if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, 1.5*sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[3]) {//left
-                    r = new Rectangle((x) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth * 1.5, sectionHeight / 2);
+                if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                    r = new Rectangle((x ) * sectionWidth, (y + 1) * sectionHeight, 1.5*sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
+
+                //r.heightProperty() new SimpleDoubleProperty();
             }
         }
         root.getChildren().addAll(walls);
@@ -88,11 +92,10 @@ public class Main extends Application {
 
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
-        // now delete some walls
-        boolean loop = false; // auf true setzn wenn die schleife donoch funktioniert
-        int skipXWalls = 3;
-        int x = 0, y = 0;
-        while (loop) {
+        deleteSomeWalls(0, 0, 5);
+    }
+    private void deleteSomeWalls(int x, int y, int skipXWalls) {
+        while (true) {
             if (wallNodes.get(y).get(x).wallInDirection[0]) {
                 if (skipXWalls == 0) {
                     wallNodes.get(y).get(x).wallInDirection[0] = false;
@@ -117,7 +120,13 @@ public class Main extends Application {
                     skipXWalls = random.nextInt(1, 10);
                 }
                 x--;
+            } else {
+                break;
             }
+            if (skipXWalls == 0) {
+                skipXWalls = random.nextInt(2, 10);
+            }
+            skipXWalls--;
 
         }
     }
