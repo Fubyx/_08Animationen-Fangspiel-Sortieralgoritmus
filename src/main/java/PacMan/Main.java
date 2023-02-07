@@ -1,6 +1,10 @@
 package PacMan;
 
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
@@ -16,7 +20,7 @@ public class Main extends Application {
     final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
 
-    int stageWidth = 1000, stageHeight = 1000;
+    double stageWidth = 700, stageHeight = 700;
     Group root = new Group();
 
 
@@ -33,9 +37,17 @@ public class Main extends Application {
         //root.getChildren().add(new Rectangle(100, 100, 100, 100));
         primaryStage.setTitle("Pac Man!");
         primaryStage.setScene(new Scene(root));
-        primaryStage.setHeight(1000);
-        primaryStage.setWidth(1000);
+        primaryStage.setHeight(stageHeight);
+        primaryStage.setWidth(stageWidth);
         primaryStage.show();
+
+        primaryStage.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+
+            }
+        });
+
     }
 
     public void buildMaze() {
@@ -49,29 +61,19 @@ public class Main extends Application {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                    r = new Rectangle((x+1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, sectionHeight);
-                    r.setFill(Paint.valueOf("green"));
-                    walls.add(r);
-
+                    r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, sectionHeight);
+                }else if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
+                }else if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, sectionHeight);
+                }else if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                    r = new Rectangle((x) * sectionWidth, (y + 1) * sectionHeight, sectionWidth, sectionHeight / 2);
+                } else {
+                    continue;
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                    r = new Rectangle((x+2) * sectionWidth, (y+1) * sectionHeight, sectionWidth, sectionHeight / 2);
-                    r.setFill(Paint.valueOf("green"));
-                    walls.add(r);
-
-                }
-                if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                    r = new Rectangle((x+1)* sectionWidth, (y+2) * sectionHeight, sectionWidth / 2, sectionHeight);
-                    r.setFill(Paint.valueOf("green"));
-                    walls.add(r);
-
-                }
-                if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                    r = new Rectangle((x) * sectionWidth, (y+1) * sectionHeight, sectionWidth, sectionHeight / 2);
-                    r.setFill(Paint.valueOf("green"));
-                    walls.add(r);
-
-                }
+                r.setFill(Paint.valueOf("green"));
+                walls.add(r);
+                //r.heightProperty() new SimpleDoubleProperty();
             }
         }
         root.getChildren().addAll(walls);
