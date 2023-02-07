@@ -30,6 +30,7 @@ public class Main extends Application {
         }
         generateRandomWallsWithNodes();
         buildMaze();
+        //root.getChildren().add(new Rectangle(100, 100, 100, 100));
         primaryStage.setTitle("Pac Man!");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -44,25 +45,31 @@ public class Main extends Application {
 
         for (int y = 0; y < wallNodes.size(); ++y) {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
-                Rectangle r = new Rectangle();
+                Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
                     r = new Rectangle(x * sectionWidth, (y - 1) * sectionHeight, sectionWidth / 2, sectionHeight);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {
                     r = new Rectangle((x - 1) * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {
                     r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth / 2, sectionHeight);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
 
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {
                     r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+                    r.setFill(Paint.valueOf("green"));
+                    walls.add(r);
 
                 }
-                r.setFill(Paint.valueOf("green"));
-                walls.add(r);
             }
         }
         root.getChildren().addAll(walls);
