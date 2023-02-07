@@ -44,24 +44,22 @@ public class Main extends Application {
 
         for (int y = 0; y < wallNodes.size(); ++y) {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
-                Rectangle r;
-                switch (wallNodes.get(y).get(x).wallInDirection) {
-                    case 0 -> {//up
-                        r = new Rectangle(x * sectionWidth, (y - 1) * sectionHeight, sectionWidth / 2, sectionHeight);
-                    }
-                    case 1 -> {//right
-                        r = new Rectangle((x - 1) * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
-                    }
-                    case 2 -> {//down
-                        r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth / 2, sectionHeight);
-                    }
-                    case 3 -> {//left
-                        r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
-                    }
-                    default -> {
-                        r = new Rectangle();
-                        System.out.println("David du trottl");
-                    }
+                Rectangle r = new Rectangle();
+                if (wallNodes.get(y).get(x).wallInDirection[0]) {
+                    r = new Rectangle(x * sectionWidth, (y - 1) * sectionHeight, sectionWidth / 2, sectionHeight);
+
+                }
+                if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                    r = new Rectangle((x - 1) * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+
+                }
+                if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                    r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth / 2, sectionHeight);
+
+                }
+                if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                    r = new Rectangle(x * sectionWidth, y * sectionHeight, sectionWidth, sectionHeight / 2);
+
                 }
                 r.setFill(Paint.valueOf("green"));
                 walls.add(r);
@@ -73,53 +71,67 @@ public class Main extends Application {
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
         // now delete some walls
-        boolean loop = true;
+        boolean loop = false; // auf true setzn wenn die schleife donoch funktioniert
         int skipXWalls = 3;
         int x = 0, y = 0;
         while (loop) {
-            int direction = wallNodes.get(y).get(x).wallInDirection;
-            if (skipXWalls == 0) {
-                wallNodes.get(y).get(x).wallInDirection = -1;
-                skipXWalls = random.nextInt(1, 10);
-            }
-            if (direction == 0) {
+            if (wallNodes.get(y).get(x).wallInDirection[0]) {
+                if (skipXWalls == 0) {
+                    wallNodes.get(y).get(x).wallInDirection[0] = false;
+                    skipXWalls = random.nextInt(1, 10);
+                }
                 y--;
-            } else if (direction == 1) {
+            } else if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                if (skipXWalls == 0) {
+                    wallNodes.get(y).get(x).wallInDirection[1] = false;
+                    skipXWalls = random.nextInt(1, 10);
+                }
                 x++;
-            } else if (direction == 2) {
+            } else if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                if (skipXWalls == 0) {
+                    wallNodes.get(y).get(x).wallInDirection[2] = false;
+                    skipXWalls = random.nextInt(1, 10);
+                }
                 y++;
-            } else if (direction == 3) {
+            } else if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                if (skipXWalls == 0) {
+                    wallNodes.get(y).get(x).wallInDirection[3] = false;
+                    skipXWalls = random.nextInt(1, 10);
+                }
                 x--;
             }
+
         }
     }
 
     private void generateWallsRecursion(int x, int y) {
+        wallNodes.get(y).get(x).isConnected = true;
         for (int i = 0; i < 20; i++) {
             switch (random.nextInt(0, 4)) {
                 case 0:
                     if (x > 0 && !wallNodes.get(y).get(x - 1).isConnected) {
-                        wallNodes.get(y).get(x).wallInDirection = 3;
+
+                        wallNodes.get(y).get(x).wallInDirection[3] = true;
                         generateWallsRecursion(x - 1, y);
-                        return;
+                        break;
                     }
                 case 1:
                     if (x + 1 < WIDTH_WALLNODES && !wallNodes.get(y).get(x + 1).isConnected) {
-                        wallNodes.get(y).get(x).wallInDirection = 1;
+                        wallNodes.get(y).get(x).wallInDirection[1] = true;
                         generateWallsRecursion(x + 1, y);
-                        return;
+                        break;
                     }
                 case 2:
                     if (y > 0 && !wallNodes.get(y - 1).get(x).isConnected) {
-                        wallNodes.get(y).get(x).wallInDirection = 0;
+                        wallNodes.get(y).get(x).wallInDirection[0] = true;
                         generateWallsRecursion(x, y - 1);
-                        return;
+                        break;
                     }
                 case 3:
                     if (y + 1 < HEIGHT_WALLNODES && !wallNodes.get(y + 1).get(x).isConnected) {
-                        wallNodes.get(y).get(x).wallInDirection = 2;
+                        wallNodes.get(y).get(x).wallInDirection[2] = true;
                         generateWallsRecursion(x, y + 1);
-                        return;
+                        break;
                     }
             }
         }
