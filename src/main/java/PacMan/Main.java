@@ -62,22 +62,22 @@ public class Main extends Application {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {//up
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y) * sectionHeight - sectionHeight/4, sectionWidth / 2, sectionHeight * 1.5);
+                    r = new Rectangle((x + 0.75) * sectionWidth, (y - 0.25) * sectionHeight, sectionWidth / 2, sectionHeight * 1.5);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {//right
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth * 1.5, sectionHeight / 2);
+                    r = new Rectangle((x + 0.75) * sectionWidth, (y + 0.75) * sectionHeight, sectionWidth * 1.5, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {//down
-                    r = new Rectangle((x + 1) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth / 2, sectionHeight * 1.5);
+                    r = new Rectangle((x + 0.75) * sectionWidth, (y + 0.75) * sectionHeight, sectionWidth / 2, sectionHeight * 1.5);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {//left
-                    r = new Rectangle((x) * sectionWidth - sectionWidth/4, (y + 1) * sectionHeight - sectionHeight/4, sectionWidth * 1.5, sectionHeight / 2);
+                    r = new Rectangle((x - 0.25) * sectionWidth, (y + 0.75) * sectionHeight, sectionWidth * 1.5, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
