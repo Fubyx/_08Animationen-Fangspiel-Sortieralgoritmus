@@ -1,7 +1,9 @@
 package PacMan;
 
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
@@ -66,40 +68,41 @@ public class Main extends Application {
             }
         };
         primaryStage.heightProperty().addListener(resizeListener);
-        primaryStage.widthProperty().addListener(resizeListener);
 
     }
 
     public void buildMaze() {
 
-        walls = new ArrayList<>();
-        double sectionWidth = stageWidth / ((double)WIDTH_WALLNODES + 0.5);
-        double sectionHeight = stageHeight / ((double)HEIGHT_WALLNODES + 0.5);
+        ArrayList<Rectangle> walls = new ArrayList<>();
+        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 1);
+        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 1);
 
 
         for (int y = 0; y < wallNodes.size(); ++y) {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
-                if (wallNodes.get(y).get(x).wallInDirection[0]) {//up
-                    r = new Rectangle((x + 0.5) * sectionWidth, (y - 0.5) * sectionHeight, sectionWidth / 2, sectionHeight * 1.5);
+                if (wallNodes.get(y).get(x).wallInDirection[0]) {
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y - 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[1]) {//right
-                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth * 1.5, sectionHeight / 2);
+                if (wallNodes.get(y).get(x).wallInDirection[1]) {
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[2]) {//down
-                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth / 2, sectionHeight * 1.5);
+                if (wallNodes.get(y).get(x).wallInDirection[2]) {
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
-                if (wallNodes.get(y).get(x).wallInDirection[3]) {//left
-                    r = new Rectangle((x - 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth * 1.5, sectionHeight / 2);
+                if (wallNodes.get(y).get(x).wallInDirection[3]) {
+                    r = new Rectangle((x - 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
+
+                //r.heightProperty() new SimpleDoubleProperty();
             }
         }
         root.getChildren().addAll(walls);
@@ -107,37 +110,37 @@ public class Main extends Application {
 
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
-        // now delete some walls
-        boolean loop = false; // auf true setzn wenn die schleife donoch funktioniert
-        int skipXWalls = 3;
-        int x = 0, y = 0;
-        while (loop) {
-            if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[0] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                y--;
-            } else if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[1] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                x++;
-            } else if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[2] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                y++;
-            } else if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                if (skipXWalls == 0) {
-                    wallNodes.get(y).get(x).wallInDirection[3] = false;
-                    skipXWalls = random.nextInt(1, 10);
-                }
-                x--;
-            }
+        deleteSomeWalls(0, 0, 5);
+    }
 
+    private void deleteSomeWalls(int x, int y, int skipXWalls) {
+        if (wallNodes.get(y).get(x).wallInDirection[0] && wallNodes.get(y-1).get(x).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[0] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x, y-1, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[1] && wallNodes.get(y).get(x+1).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[1] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x+1, y, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[2] && wallNodes.get(y+1).get(x).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[2] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x, y+1, skipXWalls-1);
+        }
+        if (wallNodes.get(y).get(x).wallInDirection[3] && wallNodes.get(y).get(x-1).hasAWall()) {
+            if (skipXWalls == 0) {
+                wallNodes.get(y).get(x).wallInDirection[3] = false;
+                skipXWalls = random.nextInt(3, 8);
+            }
+            deleteSomeWalls(x-1, y, skipXWalls-1);
         }
     }
 
