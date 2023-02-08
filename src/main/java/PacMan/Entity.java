@@ -9,8 +9,4 @@ public class Entity {
         this.ellipse = ellipse;
     }
 
-
-    public void moveTowardsEntity(Entity entity) {
-
-    }
 }

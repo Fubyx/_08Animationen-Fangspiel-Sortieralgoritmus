@@ -26,8 +26,8 @@ import java.util.Random;
 
 public class Main extends Application {
     ArrayList<ArrayList<WallNode>> wallNodes = new ArrayList<>();
-    final int WIDTH_WALLNODES = 10;
-    final int HEIGHT_WALLNODES = 10;
+    final int WIDTH_WALLNODES = 200;
+    final int HEIGHT_WALLNODES = 100;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
@@ -50,6 +50,7 @@ public class Main extends Application {
                 wallNodes.get(y).add(new WallNode());
             }
         }
+        player.ellipse.setFill(Paint.valueOf("yellow"));
         generateRandomWallsWithNodes();
         background = new Rectangle(0, 0, backgroundWidth, backgroundHeight);
         background.setFill(Paint.valueOf("white"));
