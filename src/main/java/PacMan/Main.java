@@ -40,8 +40,8 @@ public class Main extends Application {
     Rectangle background;
     ArrayList<Rectangle> walls;
 
-    Entity player = new Entity( new Ellipse(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4), stageHeight / ((HEIGHT_WALLNODES + 0.5) * 4)));
-    Entity bot = new Entity( new Ellipse());
+    Entity player = new Entity( new Ellipse(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, stageHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -134,14 +134,50 @@ public class Main extends Application {
         primaryStage.setMinWidth(100);
         primaryStage.setMinHeight(100);
 
-        Timeline timeline = new Timeline(new KeyFrame(new Duration(25), actionEvent -> {
-            player.move(keysPressed);
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
+            playerMove();
             wallCollision(player);
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
-    void wallCollision(Entity entity) {
+    boolean wallCollision(Entity entity) {
+        Rectangle temp = new Rectangle(player.ellipse.getCenterX()-player.ellipse.getRadiusX(), player.ellipse.getCenterY()-player.ellipse.getRadiusY(), player.ellipse.getRadiusX()*2, player.ellipse.getRadiusY()*2);
+        for (Rectangle wall : walls) {
+            if (temp.intersects(wall.getLayoutBounds())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void playerMove() {
+        if (keysPressed[0]) {
+            player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
+            if (wallCollision(player)) {
+                player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+            }
+        }
+        if (keysPressed[1]) {
+            player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
+            if (wallCollision(player)) {
+                player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
+
+            }
+        }
+        if (keysPressed[2]) {
+            player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+            if (wallCollision(player)) {
+                player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
+
+            }
+        }
+        if (keysPressed[3]) {
+            player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
+            if (wallCollision(player)) {
+                player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
+
+            }
+        }
 
     }
 
