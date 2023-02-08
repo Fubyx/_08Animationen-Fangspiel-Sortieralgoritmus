@@ -15,6 +15,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
@@ -26,8 +27,8 @@ import java.util.Random;
 
 public class Main extends Application {
     ArrayList<ArrayList<WallNode>> wallNodes = new ArrayList<>();
-    final int WIDTH_WALLNODES = 200;
-    final int HEIGHT_WALLNODES = 100;
+    final int WIDTH_WALLNODES = 16;
+    final int HEIGHT_WALLNODES = 9;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
@@ -50,12 +51,12 @@ public class Main extends Application {
                 wallNodes.get(y).add(new WallNode());
             }
         }
-        player.ellipse.setFill(Paint.valueOf("yellow"));
         generateRandomWallsWithNodes();
         background = new Rectangle(0, 0, backgroundWidth, backgroundHeight);
-        background.setFill(Paint.valueOf("white"));
+        background.setFill(Color.DARKGRAY);
         root.getChildren().add(background);
         buildMaze();
+        player.ellipse.setFill(Color.YELLOW);
         root.getChildren().add(player.ellipse);
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
         primaryStage.setTitle("Pac Man!");
@@ -146,7 +147,7 @@ public class Main extends Application {
         Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
             playerMove();
             wallCollision(player);
-            enemyMovement(player);
+            //enemyMovement(player);
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -206,22 +207,22 @@ public class Main extends Application {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
                     r = new Rectangle((x + 0.5) * sectionWidth, (y - 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
-                    r.setFill(Paint.valueOf("green"));
+                    r.setFill(Color.BLACK);
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {
                     r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
-                    r.setFill(Paint.valueOf("green"));
+                    r.setFill(Color.BLACK);
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {
                     r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
-                    r.setFill(Paint.valueOf("green"));
+                    r.setFill(Color.BLACK);
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {
                     r = new Rectangle((x - 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
-                    r.setFill(Paint.valueOf("green"));
+                    r.setFill(Color.BLACK);
                     walls.add(r);
                 }
 
