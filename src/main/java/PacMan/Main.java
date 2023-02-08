@@ -3,6 +3,7 @@ package PacMan;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Binding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,9 +15,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -33,11 +32,13 @@ public class Main extends Application {
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
     double sceneWidth = backgroundWidth, sceneHeight = backgroundHeight;
+    double sectionWidth, sectionHeight;
     Group root = new Group();
     Scene s;
     Rectangle background;
     ArrayList<Rectangle> walls;
 
+    ArrayList<Entity> enemies = new ArrayList<>();
     Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1, sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
 
 
@@ -74,7 +75,10 @@ public class Main extends Application {
                     case D:
                         keysPressed[1] = true;
                         break;
-
+                    case Q :
+                        Platform.exit();
+                        System.exit(0);
+                        break;
                 }
 
             }
@@ -135,10 +139,12 @@ public class Main extends Application {
         Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
             playerMove();
             wallCollision(player);
+            enemyMovement(player);
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
+
     boolean wallCollision(Entity entity) {
         Rectangle temp = new Rectangle(player.ellipse.getCenterX()-player.ellipse.getRadiusX(), player.ellipse.getCenterY()-player.ellipse.getRadiusY(), player.ellipse.getRadiusX()*2, player.ellipse.getRadiusY()*2);
         if (temp.getX() < 0 || temp.getX() + temp.getWidth() > sceneWidth || temp.getY() < 0 || temp.getY() + temp.getHeight() > sceneHeight) {
@@ -183,10 +189,9 @@ public class Main extends Application {
     }
 
     public void buildMaze() {
-
         walls = new ArrayList<>();
-        double sectionWidth = backgroundWidth / (WIDTH_WALLNODES + 0.5);
-        double sectionHeight = backgroundHeight / (HEIGHT_WALLNODES + 0.5);
+        sectionWidth = backgroundWidth / (WIDTH_WALLNODES + 0.5);
+        sectionHeight = backgroundHeight / (HEIGHT_WALLNODES + 0.5);
 
 
         for (int y = 0; y < wallNodes.size(); ++y) {
@@ -221,7 +226,7 @@ public class Main extends Application {
 
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
-        //deleteSomeWalls(0, 0, 5);
+        deleteSomeWalls(0, 0, 5);
     }
 
     private void deleteSomeWalls(int x, int y, int skipXWalls) {
@@ -286,6 +291,27 @@ public class Main extends Application {
                     }
             }
         }
+    }
+
+    private void enemyMovement(Entity e){
+        ArrayList<Double> area = new ArrayList<>(3);
+        for(double i = -1; i < 2; ++i){
+            area.add(i);
+        }
+        area.add(sectionWidth - 1);
+        if(area.contains(e.ellipse.getCenterX() % sectionWidth)){
+            System.out.println("TEst");
+        }
+
+        double []distanceToPlayer = new double[4];//0 = up, 1 = right, 2 = down, 3 = left
+
+        distanceToPlayer[0] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX(), 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY() - 1, 2));
+        distanceToPlayer[1] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX() + 1, 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY(), 2));
+        distanceToPlayer[2] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX(), 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY() + 1, 2));
+        distanceToPlayer[3] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX() - 1, 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY(), 2));
+
+        double min = Math.min(Math.min(distanceToPlayer[0], distanceToPlayer[1]), Math.min(distanceToPlayer[2], distanceToPlayer[3]));
+
     }
 
     public static void main(String[] args) {
