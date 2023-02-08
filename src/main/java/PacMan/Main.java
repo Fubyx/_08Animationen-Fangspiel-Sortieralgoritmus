@@ -29,7 +29,6 @@ public class Main extends Application {
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double stageWidth = 700, stageHeight = 700;
-
     double sceneWidth, sceneHeight;
     double backgroundWidth = 700, backgroundHeight = 700;
     Group root = new Group();
