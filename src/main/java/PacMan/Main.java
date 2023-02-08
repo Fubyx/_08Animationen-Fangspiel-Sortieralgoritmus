@@ -17,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -27,8 +29,8 @@ import java.util.Random;
 
 public class Main extends Application {
     ArrayList<ArrayList<WallNode>> wallNodes = new ArrayList<>();
-    final int WIDTH_WALLNODES = 16;
-    final int HEIGHT_WALLNODES = 9;
+    final int WIDTH_WALLNODES = 10;
+    final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
@@ -43,6 +45,7 @@ public class Main extends Application {
     Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1, sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
 
 
+    boolean arcInwards = true;
     @Override
     public void start(Stage primaryStage) throws Exception {
         for (int y = 0; y < HEIGHT_WALLNODES; y++) {
@@ -151,6 +154,41 @@ public class Main extends Application {
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+
+        Arc mouthArc = new Arc();
+        mouthArc.setCenterX(player.ellipse.getCenterX());
+        mouthArc.setCenterY(player.ellipse.getCenterY());
+        mouthArc.setRadiusX(player.ellipse.getRadiusX());
+        mouthArc.setRadiusY(player.ellipse.getRadiusY());
+        mouthArc.setStartAngle(-45.0);
+        mouthArc.setLength(90);
+        mouthArc.setFill(Color.DARKGRAY);
+        mouthArc.setType(ArcType.ROUND);
+        root.getChildren().add(mouthArc);
+
+        Timeline arcTransition = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
+            mouthArc.setCenterX(player.ellipse.getCenterX());
+            mouthArc.setCenterY(player.ellipse.getCenterY());
+            mouthArc.setRadiusX(player.ellipse.getRadiusX());
+            mouthArc.setRadiusY(player.ellipse.getRadiusY());
+            if(arcInwards){
+                if(mouthArc.getStartAngle() >= 0){
+                    arcInwards = false;
+                }else{
+                    mouthArc.setStartAngle(mouthArc.getStartAngle() + 1);
+                    mouthArc.setLength(mouthArc.getLength() - 2);
+                }
+            }else{
+                if(mouthArc.getStartAngle() <= -45){
+                    arcInwards = true;
+                }else{
+                    mouthArc.setStartAngle(mouthArc.getStartAngle() - 1);
+                    mouthArc.setLength(mouthArc.getLength() + 2);
+                }
+            }
+        }));
+        arcTransition.setCycleCount(Timeline.INDEFINITE);
+        arcTransition.play();
     }
 
     boolean wallCollision(Entity entity) {
@@ -310,7 +348,7 @@ public class Main extends Application {
         if(area.contains((((int)((e.ellipse.getCenterX() - e.ellipse.getRadiusX())*1000)  % (int)(1000*sectionWidth))/1000))){
             System.out.println("test");
         }
-        area.remove((int)sectionWidth - 1);
+        area.remove(area.size() - 1);
         area.add((int)sectionHeight - 1);
 
         double []distanceToPlayer = new double[4];//0 = up, 1 = right, 2 = down, 3 = left
