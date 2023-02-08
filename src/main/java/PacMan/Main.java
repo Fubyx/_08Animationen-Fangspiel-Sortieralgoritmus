@@ -118,6 +118,11 @@ public class Main extends Application {
                 backgroundHeight =backgroundHeight/oldSceneHeight * sceneHeight;
                 background.setWidth(backgroundWidth + 1);
                 background.setHeight(backgroundHeight + 1);
+                player.ellipse.setCenterX(player.ellipse.getCenterX()/oldBackgroundWidth * backgroundWidth);
+                player.ellipse.setCenterY(player.ellipse.getCenterY()/oldBackgroundHeight * backgroundHeight);
+                player.ellipse.setRadiusX(player.ellipse.getRadiusX()/oldBackgroundWidth * backgroundWidth);
+                player.ellipse.setRadiusY(player.ellipse.getRadiusY()/oldBackgroundHeight * backgroundHeight);
+
                 //maze
                 for (Rectangle i: walls) {
                     i.setX(i.getX()/oldBackgroundWidth * backgroundWidth);
@@ -221,7 +226,7 @@ public class Main extends Application {
 
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
-        //deleteSomeWalls(0, 0, 5);
+        deleteSomeWalls(0, 0, 5);
     }
 
     private void deleteSomeWalls(int x, int y, int skipXWalls) {
