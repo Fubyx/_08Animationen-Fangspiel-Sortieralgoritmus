@@ -134,6 +134,7 @@ public class Main extends Application {
                     i.setWidth(i.getWidth()/oldBackgroundWidth * backgroundWidth);
                     i.setHeight(i.getHeight()/oldBackgroundHeight * backgroundHeight);
                 }
+
             }
         };
         s.widthProperty().addListener(resizeListener);
@@ -299,13 +300,13 @@ public class Main extends Application {
     }
 
     private void enemyMovement(Entity e){
-        ArrayList<Double> area = new ArrayList<>(3);
-        for(double i = -1; i < 2; ++i){
+        ArrayList<Integer> area = new ArrayList<>(3);
+        for(int i = -1; i < 2; ++i){
             area.add(i);
         }
-        area.add(sectionWidth - 1);
-        if(area.contains(e.ellipse.getCenterX() % sectionWidth)){
-            System.out.println("TEst");
+        area.add((int)(sectionWidth/2 - 1));
+        if(area.contains((int)(e.ellipse.getCenterX() - e.ellipse.getRadiusX())  % (int)(sectionWidth/2))){
+
         }
 
         double []distanceToPlayer = new double[4];//0 = up, 1 = right, 2 = down, 3 = left
