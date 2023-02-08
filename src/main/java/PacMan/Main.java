@@ -301,13 +301,15 @@ public class Main extends Application {
 
     private void enemyMovement(Entity e){
         ArrayList<Integer> area = new ArrayList<>(3);
-        for(int i = -1; i < 2; ++i){
-            area.add(i + (int)sectionWidth/2);
+        for(int i = 0; i < 2; ++i){
+            area.add(i);
         }
-        area.add((int)(sectionWidth/2 - 1));
-        if(area.contains((int)(e.ellipse.getCenterX() - e.ellipse.getRadiusX())  % (int)(sectionWidth/2))){
-
+        area.add((int)sectionWidth - 1);
+        if(area.contains((((int)((e.ellipse.getCenterX() - e.ellipse.getRadiusX())*1000)  % (int)(1000*sectionWidth))/1000))){
+            System.out.println("test");
         }
+        area.remove((int)sectionWidth - 1);
+        area.add((int)sectionHeight - 1);
 
         double []distanceToPlayer = new double[4];//0 = up, 1 = right, 2 = down, 3 = left
 
