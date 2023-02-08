@@ -31,16 +31,14 @@ public class Main extends Application {
     final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
-    double stageWidth = 700, stageHeight = 700;
-    double sceneWidth, sceneHeight;
     double backgroundWidth = 700, backgroundHeight = 700;
+    double sceneWidth = backgroundWidth, sceneHeight = backgroundHeight;
     Group root = new Group();
     Scene s;
-
     Rectangle background;
     ArrayList<Rectangle> walls;
 
-    Entity player = new Entity( new Ellipse(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, stageHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
+    Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1, sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
 
 
     @Override
@@ -143,6 +141,9 @@ public class Main extends Application {
     }
     boolean wallCollision(Entity entity) {
         Rectangle temp = new Rectangle(player.ellipse.getCenterX()-player.ellipse.getRadiusX(), player.ellipse.getCenterY()-player.ellipse.getRadiusY(), player.ellipse.getRadiusX()*2, player.ellipse.getRadiusY()*2);
+        if (temp.getX() < 0 || temp.getX() + temp.getWidth() > sceneWidth || temp.getY() < 0 || temp.getY() + temp.getHeight() > sceneHeight) {
+            return true;
+        }
         for (Rectangle wall : walls) {
             if (temp.intersects(wall.getLayoutBounds())) {
                 return true;
@@ -220,7 +221,7 @@ public class Main extends Application {
 
     private void generateRandomWallsWithNodes() {
         generateWallsRecursion(0, 0);
-        deleteSomeWalls(0, 0, 5);
+        //deleteSomeWalls(0, 0, 5);
     }
 
     private void deleteSomeWalls(int x, int y, int skipXWalls) {
