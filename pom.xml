@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example._08animationenfangspielsortieralgoritmus/com.example._08animationenfangspielsortieralgoritmus.HelloApplication
+                                com.example._08animationenfangspielsortieralgoritmus/PacMan.Main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
