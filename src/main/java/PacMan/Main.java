@@ -46,6 +46,7 @@ public class Main extends Application {
 
 
     boolean arcInwards = true;
+    int arcDirection = 1;
     @Override
     public void start(Stage primaryStage) throws Exception {
         for (int y = 0; y < HEIGHT_WALLNODES; y++) {
@@ -60,6 +61,7 @@ public class Main extends Application {
         root.getChildren().add(background);
         buildMaze();
         player.ellipse.setFill(Color.YELLOW);
+        player.direction = 1;
         root.getChildren().add(player.ellipse);
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
         primaryStage.setTitle("Pac Man!");
@@ -171,15 +173,45 @@ public class Main extends Application {
             mouthArc.setCenterY(player.ellipse.getCenterY());
             mouthArc.setRadiusX(player.ellipse.getRadiusX());
             mouthArc.setRadiusY(player.ellipse.getRadiusY());
+            double arcStart = -45;
+            if(arcDirection != player.direction) {
+                arcDirection = player.direction;
+                switch (player.direction) {
+                    case 0 -> {
+                        arcStart = 45;
+                    }
+                    case 2 -> {
+                        arcStart = 225;
+                    }
+                    case 3 -> {
+                        arcStart = 135;
+                    }
+                }
+                mouthArc.setStartAngle(arcStart);
+                mouthArc.setLength(90);
+                arcInwards = true;
+            }else{
+                switch (arcDirection){
+                    case 0 -> {
+                        arcStart = 45;
+                    }
+                    case 2 -> {
+                        arcStart = 225;
+                    }
+                    case 3 -> {
+                        arcStart = 135;
+                    }
+                }
+            }
             if(arcInwards){
-                if(mouthArc.getStartAngle() >= 0){
+                if(mouthArc.getStartAngle() >= arcStart + 45){
                     arcInwards = false;
                 }else{
                     mouthArc.setStartAngle(mouthArc.getStartAngle() + 1);
                     mouthArc.setLength(mouthArc.getLength() - 2);
                 }
             }else{
-                if(mouthArc.getStartAngle() <= -45){
+                if(mouthArc.getStartAngle() <= arcStart){
                     arcInwards = true;
                 }else{
                     mouthArc.setStartAngle(mouthArc.getStartAngle() - 1);
@@ -208,27 +240,32 @@ public class Main extends Application {
             player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
             if (wallCollision(player)) {
                 player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+            }else{
+                player.direction = 0;
             }
         }
         if (keysPressed[1]) {
             player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
             if (wallCollision(player)) {
                 player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
-
+            }else{
+                player.direction = 1;
             }
         }
         if (keysPressed[2]) {
             player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
             if (wallCollision(player)) {
                 player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
-
+            }else{
+                player.direction = 2;
             }
         }
         if (keysPressed[3]) {
             player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
             if (wallCollision(player)) {
                 player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
-
+            }else{
+                player.direction = 3;
             }
         }
 
