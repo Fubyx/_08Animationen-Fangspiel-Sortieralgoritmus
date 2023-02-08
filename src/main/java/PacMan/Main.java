@@ -74,8 +74,8 @@ public class Main extends Application {
     public void buildMaze() {
 
         ArrayList<Rectangle> walls = new ArrayList<>();
-        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 1);
-        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 1);
+        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 0.5);
+        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 0.5);
 
 
         for (int y = 0; y < wallNodes.size(); ++y) {
