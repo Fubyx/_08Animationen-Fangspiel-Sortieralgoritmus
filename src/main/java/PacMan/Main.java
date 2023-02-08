@@ -1,15 +1,25 @@
 package PacMan;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -19,7 +29,8 @@ public class Main extends Application {
     final int WIDTH_WALLNODES = 10;
     final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
-
+    boolean[] keysPressed = new boolean[] {false, false, false, false};
+    double stageWidth = 700, stageHeight = 700;
     double sceneWidth, sceneHeight;
     double backgroundWidth = 700, backgroundHeight = 700;
     Group root = new Group();
@@ -28,6 +39,8 @@ public class Main extends Application {
     Rectangle background;
     ArrayList<Rectangle> walls;
 
+    Entity player = new Entity( new Circle(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4), Paint.valueOf("yellow")));
+    Entity bot = new Entity( new Circle());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -42,9 +55,22 @@ public class Main extends Application {
         background.setFill(Paint.valueOf("white"));
         root.getChildren().add(background);
         buildMaze();
+        root.getChildren().add(player.circle);
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
         primaryStage.setTitle("Pac Man!");
         s = new Scene(root);
+        s.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+
+            }
+        });
+        s.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+
+            }
+        });
         primaryStage.setScene(s);
         primaryStage.show();
         sceneHeight = s.getHeight();
@@ -78,6 +104,11 @@ public class Main extends Application {
         primaryStage.setMinWidth(100);
         primaryStage.setMinHeight(100);
 
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(100), actionEvent -> {
+
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     public void buildMaze() {
@@ -123,33 +154,33 @@ public class Main extends Application {
     }
 
     private void deleteSomeWalls(int x, int y, int skipXWalls) {
-        if (wallNodes.get(y).get(x).wallInDirection[0] && wallNodes.get(y-1).get(x).hasAWall()) {
+        if (wallNodes.get(y).get(x).wallInDirection[0] && wallNodes.get(y - 1).get(x).hasAWall()) {
             if (skipXWalls == 0) {
                 wallNodes.get(y).get(x).wallInDirection[0] = false;
                 skipXWalls = random.nextInt(3, 8);
             }
-            deleteSomeWalls(x, y-1, skipXWalls-1);
+            deleteSomeWalls(x, y - 1, skipXWalls - 1);
         }
-        if (wallNodes.get(y).get(x).wallInDirection[1] && wallNodes.get(y).get(x+1).hasAWall()) {
+        if (wallNodes.get(y).get(x).wallInDirection[1] && wallNodes.get(y).get(x + 1).hasAWall()) {
             if (skipXWalls == 0) {
                 wallNodes.get(y).get(x).wallInDirection[1] = false;
                 skipXWalls = random.nextInt(3, 8);
             }
-            deleteSomeWalls(x+1, y, skipXWalls-1);
+            deleteSomeWalls(x + 1, y, skipXWalls - 1);
         }
-        if (wallNodes.get(y).get(x).wallInDirection[2] && wallNodes.get(y+1).get(x).hasAWall()) {
+        if (wallNodes.get(y).get(x).wallInDirection[2] && wallNodes.get(y + 1).get(x).hasAWall()) {
             if (skipXWalls == 0) {
                 wallNodes.get(y).get(x).wallInDirection[2] = false;
                 skipXWalls = random.nextInt(3, 8);
             }
-            deleteSomeWalls(x, y+1, skipXWalls-1);
+            deleteSomeWalls(x, y + 1, skipXWalls - 1);
         }
-        if (wallNodes.get(y).get(x).wallInDirection[3] && wallNodes.get(y).get(x-1).hasAWall()) {
+        if (wallNodes.get(y).get(x).wallInDirection[3] && wallNodes.get(y).get(x - 1).hasAWall()) {
             if (skipXWalls == 0) {
                 wallNodes.get(y).get(x).wallInDirection[3] = false;
                 skipXWalls = random.nextInt(3, 8);
             }
-            deleteSomeWalls(x-1, y, skipXWalls-1);
+            deleteSomeWalls(x - 1, y, skipXWalls - 1);
         }
     }
 
