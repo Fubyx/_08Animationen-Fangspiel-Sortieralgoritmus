@@ -15,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -37,8 +38,8 @@ public class Main extends Application {
     Rectangle background;
     ArrayList<Rectangle> walls;
 
-    Entity player = new Entity( new Circle(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4), Paint.valueOf("yellow")));
-    Entity bot = new Entity( new Circle());
+    Entity player = new Entity( new Ellipse(0, 0, stageWidth / ((WIDTH_WALLNODES + 0.5) * 4), stageHeight / ((HEIGHT_WALLNODES + 0.5) * 4)));
+    Entity bot = new Entity( new Ellipse());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -53,20 +54,49 @@ public class Main extends Application {
         background.setFill(Paint.valueOf("black"));
         root.getChildren().add(background);
         buildMaze();
-        root.getChildren().add(player.circle);
+        root.getChildren().add(player.ellipse);
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
         primaryStage.setTitle("Pac Man!");
         s = new Scene(root);
         s.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+                switch (keyEvent.getCode()) {
+                    case W:
+                        keysPressed[0] = true;
+                        break;
+                    case A:
+                        keysPressed[3] = true;
+                        break;
+                    case S:
+                        keysPressed[2] = true;
+                        break;
+                    case D:
+                        keysPressed[1] = true;
+                        break;
+
+                }
 
             }
         });
         s.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+                switch (keyEvent.getCode()) {
+                    case W:
+                        keysPressed[0] = false;
+                        break;
+                    case A:
+                        keysPressed[3] = false;
+                        break;
+                    case S:
+                        keysPressed[2] = false;
+                        break;
+                    case D:
+                        keysPressed[1] = false;
+                        break;
 
+                }
             }
         });
         primaryStage.setScene(s);
@@ -100,11 +130,15 @@ public class Main extends Application {
         primaryStage.heightProperty().addListener(resizeListener);
         primaryStage.widthProperty().addListener(resizeListener);
 
-        Timeline timeline = new Timeline(new KeyFrame(new Duration(100), actionEvent -> {
-
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(25), actionEvent -> {
+            player.move(keysPressed);
+            wallCollision(player);
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+    void wallCollision(Entity entity) {
+
     }
 
     public void buildMaze() {
