@@ -56,30 +56,30 @@ public class Main extends Application {
     public void buildMaze() {
 
         ArrayList<Rectangle> walls = new ArrayList<>();
-        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 2);
-        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 2);
+        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 1);
+        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 1);
 
 
         for (int y = 0; y < wallNodes.size(); ++y) {
             for (int x = 0; x < wallNodes.get(y).size(); ++x) {
                 Rectangle r;
                 if (wallNodes.get(y).get(x).wallInDirection[0]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y - 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[1]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[2]) {
-                    r = new Rectangle((x + 1) * sectionWidth, (y + 1) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
+                    r = new Rectangle((x + 0.5) * sectionWidth, (y + 0.5) * sectionHeight, sectionWidth / 2, 1.5 * sectionHeight);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
                 if (wallNodes.get(y).get(x).wallInDirection[3]) {
-                    r = new Rectangle((x) * sectionWidth, (y + 1) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
+                    r = new Rectangle((x - 0.5) * sectionWidth, (y + 0.5) * sectionHeight, 1.5 * sectionWidth, sectionHeight / 2);
                     r.setFill(Paint.valueOf("green"));
                     walls.add(r);
                 }
