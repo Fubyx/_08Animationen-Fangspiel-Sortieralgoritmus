@@ -1,6 +1,8 @@
 package PacMan;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
@@ -37,7 +39,7 @@ public class Main extends Application {
         }
         generateRandomWallsWithNodes();
         background = new Rectangle(0, 0, backgroundWidth, backgroundHeight);
-        background.setFill(Paint.valueOf("black"));
+        background.setFill(Paint.valueOf("white"));
         root.getChildren().add(background);
         buildMaze();
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
@@ -71,8 +73,10 @@ public class Main extends Application {
                 }
             }
         };
-        primaryStage.heightProperty().addListener(resizeListener);
-        primaryStage.widthProperty().addListener(resizeListener);
+        s.widthProperty().addListener(resizeListener);
+        s.heightProperty().addListener(resizeListener);
+        primaryStage.setMinWidth(100);
+        primaryStage.setMinHeight(100);
 
     }
 
