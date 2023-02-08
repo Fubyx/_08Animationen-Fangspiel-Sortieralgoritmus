@@ -6,6 +6,8 @@ import javafx.application.Application;
 import javafx.beans.binding.Binding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -51,7 +53,7 @@ public class Main extends Application {
         }
         generateRandomWallsWithNodes();
         background = new Rectangle(0, 0, backgroundWidth, backgroundHeight);
-        background.setFill(Paint.valueOf("black"));
+        background.setFill(Paint.valueOf("white"));
         root.getChildren().add(background);
         buildMaze();
         root.getChildren().add(player.ellipse);
@@ -127,8 +129,10 @@ public class Main extends Application {
                 }
             }
         };
-        primaryStage.heightProperty().addListener(resizeListener);
-        primaryStage.widthProperty().addListener(resizeListener);
+        s.widthProperty().addListener(resizeListener);
+        s.heightProperty().addListener(resizeListener);
+        primaryStage.setMinWidth(100);
+        primaryStage.setMinHeight(100);
 
         Timeline timeline = new Timeline(new KeyFrame(new Duration(25), actionEvent -> {
             player.move(keysPressed);
