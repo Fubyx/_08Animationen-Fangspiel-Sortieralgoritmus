@@ -29,6 +29,9 @@ public class Main extends Application {
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double stageWidth = 700, stageHeight = 700;
+
+    double sceneWidth, sceneHeight;
+    double backgroundWidth = 700, backgroundHeight = 700;
     Group root = new Group();
     Scene s;
 
@@ -47,7 +50,7 @@ public class Main extends Application {
             }
         }
         generateRandomWallsWithNodes();
-        background = new Rectangle(0, 0, stageWidth, stageHeight);
+        background = new Rectangle(0, 0, backgroundWidth, backgroundHeight);
         background.setFill(Paint.valueOf("black"));
         root.getChildren().add(background);
         buildMaze();
@@ -69,26 +72,34 @@ public class Main extends Application {
         });
         primaryStage.setScene(s);
         primaryStage.show();
+        sceneHeight = s.getHeight();
+        sceneWidth = s.getWidth();
+
 
         ChangeListener<Number> resizeListener = new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                double oldStageWidth = stageWidth, oldStageHeight = stageHeight;
-                stageWidth = primaryStage.getWidth();
-                stageHeight = primaryStage.getHeight();
+                double oldSceneWidth = sceneWidth, oldSceneHeight = sceneHeight;
+                sceneWidth = s.getWidth();
+                sceneHeight = s.getHeight();
 
                 //background
-                background.setWidth(background.getWidth() / oldStageWidth * stageWidth);
-                background.setHeight(background.getHeight() / oldStageHeight * stageHeight);
-
+                double oldBackgroundHeight = backgroundHeight, oldBackgroundWidth = backgroundWidth;
+                backgroundWidth= backgroundWidth/oldSceneWidth * sceneWidth;
+                backgroundHeight =backgroundHeight/oldSceneHeight * sceneHeight;
+                background.setWidth(backgroundWidth + 1);
+                background.setHeight(backgroundHeight + 1);
                 //maze
-                for (Rectangle i : walls) {
-                    i.setX(i.getX() / oldStageWidth * stageWidth);
-                    i.setY(i.getY());
+                for (Rectangle i: walls) {
+                    i.setX(i.getX()/oldBackgroundWidth * backgroundWidth);
+                    i.setY(i.getY()/oldBackgroundHeight * backgroundHeight);
+                    i.setWidth(i.getWidth()/oldBackgroundWidth * backgroundWidth);
+                    i.setHeight(i.getHeight()/oldBackgroundHeight * backgroundHeight);
                 }
             }
         };
         primaryStage.heightProperty().addListener(resizeListener);
+        primaryStage.widthProperty().addListener(resizeListener);
 
         Timeline timeline = new Timeline(new KeyFrame(new Duration(100), actionEvent -> {
 
@@ -100,8 +111,8 @@ public class Main extends Application {
     public void buildMaze() {
 
         walls = new ArrayList<>();
-        double sectionWidth = stageWidth / (WIDTH_WALLNODES + 0.5);
-        double sectionHeight = stageHeight / (HEIGHT_WALLNODES + 0.5);
+        double sectionWidth = backgroundWidth / (WIDTH_WALLNODES + 0.5);
+        double sectionHeight = backgroundHeight / (HEIGHT_WALLNODES + 0.5);
 
 
         for (int y = 0; y < wallNodes.size(); ++y) {
