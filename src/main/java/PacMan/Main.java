@@ -302,7 +302,7 @@ public class Main extends Application {
     private void enemyMovement(Entity e){
         ArrayList<Integer> area = new ArrayList<>(3);
         for(int i = -1; i < 2; ++i){
-            area.add(i);
+            area.add(i + (int)sectionWidth/2);
         }
         area.add((int)(sectionWidth/2 - 1));
         if(area.contains((int)(e.ellipse.getCenterX() - e.ellipse.getRadiusX())  % (int)(sectionWidth/2))){
