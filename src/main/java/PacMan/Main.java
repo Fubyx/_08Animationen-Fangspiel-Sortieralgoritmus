@@ -1,5 +1,6 @@
 package PacMan;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -17,9 +18,12 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -27,8 +31,8 @@ import java.util.Random;
 
 public class Main extends Application {
     ArrayList<ArrayList<WallNode>> wallNodes = new ArrayList<>();
-    final int WIDTH_WALLNODES = 16;
-    final int HEIGHT_WALLNODES = 9;
+    final int WIDTH_WALLNODES = 10;
+    final int HEIGHT_WALLNODES = 10;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
@@ -40,8 +44,14 @@ public class Main extends Application {
     ArrayList<Rectangle> walls;
 
     ArrayList<Entity> enemies = new ArrayList<>();
-    Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4), sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 2, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 2));
+    Entity player = new Entity(new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1, sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1), 100, 5);
 
+
+    boolean arcInwards = true;
+    int arcDirection = 1;
+
+
+    ArrayList<Ellipse> powerUps = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -57,6 +67,7 @@ public class Main extends Application {
         root.getChildren().add(background);
         buildMaze();
         player.ellipse.setFill(Color.YELLOW);
+        player.direction = 1;
         root.getChildren().add(player.ellipse);
         //root.getChildren().add(new Rectangle(0, 0, stageWidth, stageHeight));
         primaryStage.setTitle("Pac Man!");
@@ -112,6 +123,14 @@ public class Main extends Application {
 
 
         ChangeListener<Number> resizeListener = new ChangeListener<>() {
+            double oldBackgroundWidth, oldBackgroundHeight;
+
+            private void resizeEllipse (Ellipse e){
+                e.setCenterX(e.getCenterX()/oldBackgroundWidth * backgroundWidth);
+                e.setCenterY(e.getCenterY()/oldBackgroundHeight * backgroundHeight);
+                e.setRadiusX(e.getRadiusX()/oldBackgroundWidth * backgroundWidth);
+                e.setRadiusY(e.getRadiusY()/oldBackgroundHeight * backgroundHeight);
+            }
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 double oldSceneWidth = sceneWidth, oldSceneHeight = sceneHeight;
@@ -119,15 +138,12 @@ public class Main extends Application {
                 sceneHeight = s.getHeight();
 
                 //background
-                double oldBackgroundHeight = backgroundHeight, oldBackgroundWidth = backgroundWidth;
+                oldBackgroundHeight = backgroundHeight;
+                oldBackgroundWidth = backgroundWidth;
                 backgroundWidth= backgroundWidth/oldSceneWidth * sceneWidth;
                 backgroundHeight =backgroundHeight/oldSceneHeight * sceneHeight;
                 background.setWidth(backgroundWidth + 1);
                 background.setHeight(backgroundHeight + 1);
-                player.ellipse.setCenterX(player.ellipse.getCenterX()/oldBackgroundWidth * backgroundWidth);
-                player.ellipse.setCenterY(player.ellipse.getCenterY()/oldBackgroundHeight * backgroundHeight);
-                player.ellipse.setRadiusX(player.ellipse.getRadiusX()/oldBackgroundWidth * backgroundWidth);
-                player.ellipse.setRadiusY(player.ellipse.getRadiusY()/oldBackgroundHeight * backgroundHeight);
 
                 //maze
                 for (Rectangle i: walls) {
@@ -137,6 +153,25 @@ public class Main extends Application {
                     i.setHeight(i.getHeight()/oldBackgroundHeight * backgroundHeight);
                 }
 
+                for(Ellipse e : powerUps){
+                    resizeEllipse(e);
+                }
+
+                resizeEllipse(player.ellipse);
+
+                ArrayList<Integer> toRem = new ArrayList<>();
+                for(Entity i : enemies){
+                    if(i.toRemove){
+                        toRem.add(enemies.indexOf(i));
+                    }else {
+                        resizeEllipse(i.ellipse);
+                    }
+                }
+                toRem.sort(null);
+                for(int i = 0; i < toRem.size(); ++i){
+                    enemies.remove(toRem.get(i) - i);
+                }
+
             }
         };
         s.widthProperty().addListener(resizeListener);
@@ -144,17 +179,135 @@ public class Main extends Application {
         primaryStage.setMinWidth(100);
         primaryStage.setMinHeight(100);
 
-        Timeline timeline = new Timeline(new KeyFrame(new Duration(20), actionEvent -> {
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
             playerMove();
             wallCollision(player);
-            //enemyMovement(player);
+            ArrayList<Integer> toRem = new ArrayList<>();
+            for(Entity e : enemies){
+                if(!e.toRemove)
+                    enemyMovement(e);
+                else
+                    toRem.add(enemies.indexOf(e));
+            }
+            toRem.sort(null);
+            for(int i = 0; i < toRem.size(); ++i){
+                enemies.remove(toRem.get(i) - i);
+            }
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+
+        Arc mouthArc = new Arc();
+        mouthArc.setCenterX(player.ellipse.getCenterX());
+        mouthArc.setCenterY(player.ellipse.getCenterY());
+        mouthArc.setRadiusX(player.ellipse.getRadiusX());
+        mouthArc.setRadiusY(player.ellipse.getRadiusY());
+        mouthArc.setStartAngle(-45.0);
+        mouthArc.setLength(90);
+        mouthArc.setFill(background.getFill());
+        mouthArc.setType(ArcType.ROUND);
+        root.getChildren().add(mouthArc);
+
+        Timeline arcTransition = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
+            mouthArc.setCenterX(player.ellipse.getCenterX());
+            mouthArc.setCenterY(player.ellipse.getCenterY());
+            mouthArc.setRadiusX(player.ellipse.getRadiusX());
+            mouthArc.setRadiusY(player.ellipse.getRadiusY());
+            double arcStart = -45;
+            if(arcDirection != player.direction) {
+                arcDirection = player.direction;
+                switch (player.direction) {
+                    case 0 -> {
+                        arcStart = 45;
+                    }
+                    case 2 -> {
+                        arcStart = 225;
+                    }
+                    case 3 -> {
+                        arcStart = 135;
+                    }
+                }
+                mouthArc.setStartAngle(arcStart);
+                mouthArc.setLength(90);
+                arcInwards = true;
+            }else{
+                switch (arcDirection){
+                    case 0 -> {
+                        arcStart = 45;
+                    }
+                    case 2 -> {
+                        arcStart = 225;
+                    }
+                    case 3 -> {
+                        arcStart = 135;
+                    }
+                }
+            }
+            if(arcInwards){
+                if(mouthArc.getStartAngle() >= arcStart + 45){
+                    arcInwards = false;
+                }else{
+                    mouthArc.setStartAngle(mouthArc.getStartAngle() + 1);
+                    mouthArc.setLength(mouthArc.getLength() - 2);
+                }
+            }else{
+                if(mouthArc.getStartAngle() <= arcStart){
+                    arcInwards = true;
+                }else{
+                    mouthArc.setStartAngle(mouthArc.getStartAngle() - 1);
+                    mouthArc.setLength(mouthArc.getLength() + 2);
+                }
+            }
+        }));
+        arcTransition.setCycleCount(Timeline.INDEFINITE);
+        arcTransition.play();
+
+        enemies.add(new Entity(new Ellipse(backgroundWidth - player.ellipse.getRadiusX() - 2, backgroundHeight - player.ellipse.getRadiusY() - 2, player.ellipse.getRadiusX(), player.ellipse.getRadiusY()), 10, 15));
+        enemies.get(0).ellipse.setFill(Color.RED);
+        root.getChildren().add(enemies.get(0).ellipse);
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int amountOfEnemies = random.nextInt(1, 5);
+                for(int i = 0; i < amountOfEnemies; ++i){
+                    double x = sectionWidth * (random.nextInt(1, WIDTH_WALLNODES));
+                    double y = sectionHeight * (random.nextInt(1, HEIGHT_WALLNODES));
+                    double radiusX = player.ellipse.getRadiusX();
+                    double radiusY = player.ellipse.getRadiusY();
+                    Entity e = new Entity(new Ellipse(x + radiusX + 1, y + radiusY + 1, radiusX, radiusY), 10, 5);
+                    e.ellipse.setFill(Color.RED);
+                    if(!wallCollision(e)) {
+                        enemies.add(e);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                root.getChildren().add(e.ellipse);
+                            }
+                        });
+
+                    }else{
+                        --i;
+                    }
+                }
+            }
+        });
+        t.start();
+
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                timeline.stop();
+                arcTransition.stop();
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 
     boolean wallCollision(Entity entity) {
-        Rectangle temp = new Rectangle(player.ellipse.getCenterX()-player.ellipse.getRadiusX(), player.ellipse.getCenterY()-player.ellipse.getRadiusY(), player.ellipse.getRadiusX()*2, player.ellipse.getRadiusY()*2);
+        Rectangle temp = new Rectangle(entity.ellipse.getCenterX()-entity.ellipse.getRadiusX(), entity.ellipse.getCenterY()-entity.ellipse.getRadiusY(), entity.ellipse.getRadiusX()*2, entity.ellipse.getRadiusY()*2);
         if (temp.getX() < 0 || temp.getX() + temp.getWidth() > sceneWidth || temp.getY() < 0 || temp.getY() + temp.getHeight() > sceneHeight) {
             return true;
         }
@@ -165,32 +318,43 @@ public class Main extends Application {
         }
         return false;
     }
+    boolean ellipseCollision (Ellipse a, Ellipse b){
+        return (Math.max(a.getCenterY(), b.getCenterY()) - Math.min(a.getCenterY(), b.getCenterY()) < a.getRadiusY() + b.getRadiusY()) && (Math.max(a.getCenterX(), b.getCenterX()) - Math.min(a.getCenterX(), b.getCenterX()) < a.getRadiusX() + b.getRadiusX());
+    }
     public void playerMove() {
+        if(player.hp <= 0){
+            return;
+        }
         if (keysPressed[0]) {
-            player.ellipse.setCenterY(player.ellipse.getCenterY()-(double)(HEIGHT_WALLNODES+1)/200);
+            player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
             if (wallCollision(player)) {
-                player.ellipse.setCenterY(player.ellipse.getCenterY()+(double)(HEIGHT_WALLNODES+1)/200);
+                player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+            }else{
+                player.direction = 0;
             }
         }
         if (keysPressed[1]) {
-            player.ellipse.setCenterX(player.ellipse.getCenterX()+(double)(WIDTH_WALLNODES+1)/200);
+            player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
             if (wallCollision(player)) {
-                player.ellipse.setCenterX(player.ellipse.getCenterX()-(double)(WIDTH_WALLNODES+1)/200);
-
+                player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
+            }else{
+                player.direction = 1;
             }
         }
         if (keysPressed[2]) {
-            player.ellipse.setCenterY(player.ellipse.getCenterY()+(double)(HEIGHT_WALLNODES+1)/200);
+            player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
             if (wallCollision(player)) {
-                player.ellipse.setCenterY(player.ellipse.getCenterY()-(double)(HEIGHT_WALLNODES+1)/200);
-
+                player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
+            }else{
+                player.direction = 2;
             }
         }
         if (keysPressed[3]) {
-            player.ellipse.setCenterX(player.ellipse.getCenterX()-(double)(WIDTH_WALLNODES+1)/200);
+            player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
             if (wallCollision(player)) {
-                player.ellipse.setCenterX(player.ellipse.getCenterX()+(double)(WIDTH_WALLNODES+1)/200);
-
+                player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
+            }else{
+                player.direction = 3;
             }
         }
 
@@ -302,26 +466,105 @@ public class Main extends Application {
     }
 
     private void enemyMovement(Entity e){
+        if(e.hp <= 0){
+            FadeTransition f = new FadeTransition();
+            f.setNode(e.ellipse);
+            f.setDuration(new Duration(3000));
+            f.setCycleCount(1);
+            f.setFromValue(1.0);
+            f.setToValue(0.0);
+            f.play();
+            e.toRemove = true;
+            return;
+        }
+
+        int hits = 0;
         ArrayList<Integer> area = new ArrayList<>(3);
         for(int i = 0; i < 2; ++i){
             area.add(i);
         }
         area.add((int)sectionWidth - 1);
         if(area.contains((((int)((e.ellipse.getCenterX() - e.ellipse.getRadiusX())*1000)  % (int)(1000*sectionWidth))/1000))){
-            System.out.println("test");
+            ++hits;
         }
-        area.remove((int)sectionWidth - 1);
+        area.remove(area.size() - 1);
         area.add((int)sectionHeight - 1);
+        if(area.contains((((int)((e.ellipse.getCenterY() - e.ellipse.getRadiusY())*1000)  % (int)(1000*sectionHeight))/1000))){
+            ++hits;
+        }
 
-        double []distanceToPlayer = new double[4];//0 = up, 1 = right, 2 = down, 3 = left
-
-        distanceToPlayer[0] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX(), 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY() - 1, 2));
-        distanceToPlayer[1] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX() + 1, 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY(), 2));
-        distanceToPlayer[2] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX(), 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY() + 1, 2));
-        distanceToPlayer[3] = Math.sqrt(Math.pow(player.ellipse.getCenterX() - e.ellipse.getCenterX() - 1, 2) + Math.pow(player.ellipse.getCenterY() - e.ellipse.getCenterY(), 2));
-
-        double min = Math.min(Math.min(distanceToPlayer[0], distanceToPlayer[1]), Math.min(distanceToPlayer[2], distanceToPlayer[3]));
-
+        if(hits == 2){
+            int newDirection = 0;
+            double x = e.ellipse.getCenterX();
+            double y = e.ellipse.getCenterY();
+            double lowestDistance = findOptimalPath(x, y - 1, 0);
+            double dist = findOptimalPath(x + 1, y, 0);
+            if (dist < lowestDistance) {
+                newDirection = 1;
+                lowestDistance = dist;
+            }
+            dist = findOptimalPath(x, y + 1, 0);
+            if (dist < lowestDistance) {
+                newDirection = 2;
+                lowestDistance = dist;
+            }
+            dist = findOptimalPath(x - 1, y, 0);
+            if (dist < lowestDistance) {
+                newDirection = 3;
+            }
+            e.direction = newDirection;
+        }
+        if(e.direction == 0){
+            e.ellipse.setCenterY(e.ellipse.getCenterY() - 1);
+            if(wallCollision(e)){
+                e.ellipse.setCenterY(e.ellipse.getCenterY() + 1);
+            }
+            if(e.ellipse.getCenterY() < e.ellipse.getRadiusY()){
+                e.ellipse.setCenterY(e.ellipse.getCenterY() + 1);
+            }
+        }else if(e.direction == 1){
+            e.ellipse.setCenterX(e.ellipse.getCenterX() + 1);
+            if(wallCollision(e)){
+                e.ellipse.setCenterX(e.ellipse.getCenterX() - 1);
+            }
+            if(e.ellipse.getCenterX() > backgroundWidth - e.ellipse.getRadiusX()){
+                e.ellipse.setCenterX(e.ellipse.getCenterX() - 1);
+            }
+        }else if(e.direction == 2){
+            e.ellipse.setCenterY(e.ellipse.getCenterY() + 1);
+            if(wallCollision(e)){
+                e.ellipse.setCenterY(e.ellipse.getCenterY() - 1);
+            }
+            if(e.ellipse.getCenterY() > backgroundHeight - e.ellipse.getRadiusY()){
+                e.ellipse.setCenterY(e.ellipse.getCenterY() - 1);
+            }
+        }else if(e.direction == 3){
+            e.ellipse.setCenterX(e.ellipse.getCenterX() - 1);
+            if(wallCollision(e)){
+                e.ellipse.setCenterX(e.ellipse.getCenterX() + 1);
+            }
+            if(e.ellipse.getCenterY() < e.ellipse.getRadiusY()){
+                e.ellipse.setCenterX(e.ellipse.getCenterX() + 1);
+            }
+        }//*/
+        if(ellipseCollision(e.ellipse, player.ellipse)){
+            player.hp -= e.damage;
+            e.hp -= player.damage;
+        }
+    }
+    private double findOptimalPath(double x, double y, int depth){
+        if(depth > 7){
+            return Double.MAX_VALUE;
+        }
+        if(wallCollision(new Entity(new Ellipse(x, y, player.ellipse.getRadiusX(), player.ellipse.getRadiusY()), 0, 0))){
+            return Double.MAX_VALUE;
+        }
+        double lowestDistance = Math.sqrt(Math.pow((x - player.ellipse.getCenterX()), 2) + Math.pow((y - player.ellipse.getCenterY()), 2));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y - 1, depth + 1));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x + 1, y, depth + 1));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y + 1, depth + 1));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x - 1, y, depth + 1));
+        return lowestDistance;
     }
 
     public static void main(String[] args) {
