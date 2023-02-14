@@ -97,7 +97,6 @@ public class Main extends Application {
         //farbmarkierung für de wos kontrolliert werdn?
         int[] temp = {0}, i = {0}, j = {0};
         timeline = new Timeline(new KeyFrame(new Duration(timePerStep), ActionEvent -> {
-
             if (j[0] == amountToSort - 1 - i[0]) {
                 i[0]++;
                 j[0] = 0;
