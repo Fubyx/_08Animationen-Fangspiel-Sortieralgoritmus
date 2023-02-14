@@ -40,7 +40,7 @@ public class Main extends Application {
     ArrayList<Rectangle> walls;
 
     ArrayList<Entity> enemies = new ArrayList<>();
-    Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1, sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 1, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 1));
+    Entity player = new Entity( new Ellipse(sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4), sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4), sceneWidth / ((WIDTH_WALLNODES + 0.5) * 4) - 2, sceneHeight / ((HEIGHT_WALLNODES + 0.5) * 4) - 2));
 
 
     @Override
@@ -144,7 +144,7 @@ public class Main extends Application {
         primaryStage.setMinWidth(100);
         primaryStage.setMinHeight(100);
 
-        Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
+        Timeline timeline = new Timeline(new KeyFrame(new Duration(20), actionEvent -> {
             playerMove();
             wallCollision(player);
             //enemyMovement(player);
@@ -167,29 +167,29 @@ public class Main extends Application {
     }
     public void playerMove() {
         if (keysPressed[0]) {
-            player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
+            player.ellipse.setCenterY(player.ellipse.getCenterY()-(double)(HEIGHT_WALLNODES+1)/200);
             if (wallCollision(player)) {
-                player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+                player.ellipse.setCenterY(player.ellipse.getCenterY()+(double)(HEIGHT_WALLNODES+1)/200);
             }
         }
         if (keysPressed[1]) {
-            player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
+            player.ellipse.setCenterX(player.ellipse.getCenterX()+(double)(WIDTH_WALLNODES+1)/200);
             if (wallCollision(player)) {
-                player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
+                player.ellipse.setCenterX(player.ellipse.getCenterX()-(double)(WIDTH_WALLNODES+1)/200);
 
             }
         }
         if (keysPressed[2]) {
-            player.ellipse.setCenterY(player.ellipse.getCenterY()+1);
+            player.ellipse.setCenterY(player.ellipse.getCenterY()+(double)(HEIGHT_WALLNODES+1)/200);
             if (wallCollision(player)) {
-                player.ellipse.setCenterY(player.ellipse.getCenterY()-1);
+                player.ellipse.setCenterY(player.ellipse.getCenterY()-(double)(HEIGHT_WALLNODES+1)/200);
 
             }
         }
         if (keysPressed[3]) {
-            player.ellipse.setCenterX(player.ellipse.getCenterX()-1);
+            player.ellipse.setCenterX(player.ellipse.getCenterX()-(double)(WIDTH_WALLNODES+1)/200);
             if (wallCollision(player)) {
-                player.ellipse.setCenterX(player.ellipse.getCenterX()+1);
+                player.ellipse.setCenterX(player.ellipse.getCenterX()+(double)(WIDTH_WALLNODES+1)/200);
 
             }
         }

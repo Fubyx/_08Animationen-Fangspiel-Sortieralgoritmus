@@ -9,4 +9,6 @@ module com.example._08animationenfangspielsortieralgoritmus {
     exports fangspiel;
     exports PacMan;
     opens PacMan to javafx.fxml;
+    opens Sortieralgorhytmus to javafx.fxml;
+    exports Sortieralgorhytmus;
 }
