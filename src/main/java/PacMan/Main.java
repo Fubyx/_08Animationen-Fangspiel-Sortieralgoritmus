@@ -31,8 +31,8 @@ import java.util.Random;
 
 public class Main extends Application {
     ArrayList<ArrayList<WallNode>> wallNodes = new ArrayList<>();
-    final int WIDTH_WALLNODES = 10;
-    final int HEIGHT_WALLNODES = 10;
+    final int WIDTH_WALLNODES = 100;
+    final int HEIGHT_WALLNODES = 100;
     Random random = new Random();
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
