@@ -37,6 +37,7 @@ public class Main extends Application {
     boolean[] keysPressed = new boolean[] {false, false, false, false};
     double backgroundWidth = 700, backgroundHeight = 700;
     double sceneWidth = backgroundWidth, sceneHeight = backgroundHeight;
+    /**1 section = the distance between 2 Nodes*/
     double sectionWidth, sectionHeight;
     Group root = new Group();
     Scene s;
@@ -159,17 +160,15 @@ public class Main extends Application {
 
                 resizeEllipse(player.ellipse);
 
-                ArrayList<Integer> toRem = new ArrayList<>();
-                for(Entity i : enemies){
-                    if(i.toRemove){
-                        toRem.add(enemies.indexOf(i));
-                    }else {
-                        resizeEllipse(i.ellipse);
-                    }
+                ArrayList<Entity> toRem = new ArrayList<>();
+                for(Entity e : enemies){
+                    if(!e.toRemove)
+                        resizeEllipse(e.ellipse);
+                    else
+                        toRem.add(e);
                 }
-                toRem.sort(null);
-                for(int i = 0; i < toRem.size(); ++i){
-                    enemies.remove(toRem.get(i) - i);
+                for(Entity e : toRem){
+                    enemies.remove(e);
                 }
 
             }
@@ -182,16 +181,15 @@ public class Main extends Application {
         Timeline timeline = new Timeline(new KeyFrame(new Duration(10), actionEvent -> {
             playerMove();
             wallCollision(player);
-            ArrayList<Integer> toRem = new ArrayList<>();
+            ArrayList<Entity> toRem = new ArrayList<>();
             for(Entity e : enemies){
                 if(!e.toRemove)
                     enemyMovement(e);
                 else
-                    toRem.add(enemies.indexOf(e));
+                    toRem.add(e);
             }
-            toRem.sort(null);
-            for(int i = 0; i < toRem.size(); ++i){
-                enemies.remove(toRem.get(i) - i);
+            for(Entity e : toRem){
+                enemies.remove(e);
             }
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -262,7 +260,7 @@ public class Main extends Application {
         arcTransition.setCycleCount(Timeline.INDEFINITE);
         arcTransition.play();
 
-        enemies.add(new Entity(new Ellipse(backgroundWidth - player.ellipse.getRadiusX() - 2, backgroundHeight - player.ellipse.getRadiusY() - 2, player.ellipse.getRadiusX(), player.ellipse.getRadiusY()), 10, 15));
+        enemies.add(new Entity(new Ellipse(backgroundWidth - player.ellipse.getRadiusX() - 1, backgroundHeight - player.ellipse.getRadiusY() - 1, player.ellipse.getRadiusX(), player.ellipse.getRadiusY()), 10, 15));
         enemies.get(0).ellipse.setFill(Color.RED);
         root.getChildren().add(enemies.get(0).ellipse);
 
@@ -304,10 +302,15 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
+
+        Rectangle r = new Rectangle(sectionWidth * 4, 0, sectionWidth/2, backgroundHeight);
+        r.setFill(Color.GREEN);
+        ///root.getChildren().add(r);
+
     }
 
     boolean wallCollision(Entity entity) {
-        Rectangle temp = new Rectangle(entity.ellipse.getCenterX()-entity.ellipse.getRadiusX(), entity.ellipse.getCenterY()-entity.ellipse.getRadiusY(), entity.ellipse.getRadiusX()*2, entity.ellipse.getRadiusY()*2);
+        Rectangle temp = new Rectangle(entity.ellipse.getCenterX() - entity.ellipse.getRadiusX(), entity.ellipse.getCenterY() - entity.ellipse.getRadiusY(), entity.ellipse.getRadiusX() * 2, entity.ellipse.getRadiusY() * 2);
         if (temp.getX() < 0 || temp.getX() + temp.getWidth() > sceneWidth || temp.getY() < 0 || temp.getY() + temp.getHeight() > sceneHeight) {
             return true;
         }
@@ -483,32 +486,42 @@ public class Main extends Application {
         for(int i = 0; i < 2; ++i){
             area.add(i);
         }
-        area.add((int)sectionWidth - 1);
+        //area.add((int)sectionWidth - 1);
         if(area.contains((((int)((e.ellipse.getCenterX() - e.ellipse.getRadiusX())*1000)  % (int)(1000*sectionWidth))/1000))){
             ++hits;
         }
-        area.remove(area.size() - 1);
-        area.add((int)sectionHeight - 1);
+        //area.remove(area.size() - 1);
+        //area.add((int)sectionHeight - 1);
         if(area.contains((((int)((e.ellipse.getCenterY() - e.ellipse.getRadiusY())*1000)  % (int)(1000*sectionHeight))/1000))){
             ++hits;
         }
 
         if(hits == 2){
+
+            double w = sectionWidth/2;
+            double h = sectionHeight/2;
+
             int newDirection = 0;
             double x = e.ellipse.getCenterX();
             double y = e.ellipse.getCenterY();
-            double lowestDistance = findOptimalPath(x, y - 1, 0);
-            double dist = findOptimalPath(x + 1, y, 0);
+
+            double posX = (x - e.ellipse.getRadiusX())/sectionWidth;
+            double posY = (y - e.ellipse.getRadiusY())/sectionHeight;
+            x = sectionWidth * (int)posX + e.ellipse.getRadiusX() + 1;
+            y = sectionHeight * (int)posY + e.ellipse.getRadiusY() + 1;
+
+            double lowestDistance = findOptimalPath(x, y - h, 0, w, h);
+            double dist = findOptimalPath(x + w, y, 0, w, h);
             if (dist < lowestDistance) {
                 newDirection = 1;
                 lowestDistance = dist;
             }
-            dist = findOptimalPath(x, y + 1, 0);
+            dist = findOptimalPath(x, y + h, 0, w, h);
             if (dist < lowestDistance) {
                 newDirection = 2;
                 lowestDistance = dist;
             }
-            dist = findOptimalPath(x - 1, y, 0);
+            dist = findOptimalPath(x - w, y, 0, w, h);
             if (dist < lowestDistance) {
                 newDirection = 3;
             }
@@ -552,20 +565,43 @@ public class Main extends Application {
             e.hp -= player.damage;
         }
     }
-    private double findOptimalPath(double x, double y, int depth){
-        if(depth > 7){
-            return Double.MAX_VALUE;
+    private double findOptimalPath(double x, double y, int depth, double w, double h){
+        if(depth > 6){
+            return 50000;
         }
+        //Ellipse e = new Ellipse(x, y, player.ellipse.getRadiusX(), player.ellipse.getRadiusY());
+        //root.getChildren().add(e);
         if(wallCollision(new Entity(new Ellipse(x, y, player.ellipse.getRadiusX(), player.ellipse.getRadiusY()), 0, 0))){
-            return Double.MAX_VALUE;
+            System.out.println(depth);
+            return 50000;
         }
+        double posX = x/sectionWidth;
+        double posY = y/sectionHeight;
+
+
         double lowestDistance = Math.sqrt(Math.pow((x - player.ellipse.getCenterX()), 2) + Math.pow((y - player.ellipse.getCenterY()), 2));
-        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y - 1, depth + 1));
-        lowestDistance = Math.min(lowestDistance, findOptimalPath(x + 1, y, depth + 1));
-        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y + 1, depth + 1));
-        lowestDistance = Math.min(lowestDistance, findOptimalPath(x - 1, y, depth + 1));
+
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y - h, depth + 1, w, h));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x + w, y, depth + 1, w, h));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x, y + h, depth + 1, w, h));
+        lowestDistance = Math.min(lowestDistance, findOptimalPath(x - w, y, depth + 1, w, h));
         return lowestDistance;
     }
+
+    /*
+    private boolean isWholeNumber(Double d){
+        String str = d.toString();
+        for(int i = 0; i < str.length(); i++){
+            if(str.charAt(i) == '.'){
+                String substring = str.substring(i + 1, 8);
+                int ix = Integer.parseInt(substring);
+                if(ix > 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }//*/
 
     public static void main(String[] args) {
         launch(args);
